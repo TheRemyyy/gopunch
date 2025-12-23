@@ -1,35 +1,42 @@
+<div align="center">
+
 # Contributing to GoPunch
 
-Thank you for your interest in contributing to GoPunch! This document provides guidelines for contributing.
+**Help us build the best uptime monitor**
+
+</div>
+
+---
+
+Thank you for your interest in contributing to GoPunch! This document provides guidelines for contributing to the project.
 
 ## How to Contribute
 
 ### Reporting Bugs
 
-1. Check existing issues to avoid duplicates
-2. Use the bug report template
-3. Include Go version, OS, and steps to reproduce
+1. Check existing issues to avoid duplicates.
+2. Use the bug report template.
+3. Include Go version, OS, and steps to reproduce.
 
 ### Suggesting Features
 
-1. Open an issue with the "enhancement" label
-2. Describe the use case and proposed solution
+1. Open an issue with the "enhancement" label.
+2. Describe the use case and proposed solution.
 
 ### Pull Requests
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Write clean, documented code
-4. Add tests if applicable
-5. Run `go test ./...` before submitting
-6. Submit a PR with a clear description
+1. **Fork** the repository.
+2. **Create a branch**: `git checkout -b feature/your-feature`.
+3. **Write code**: Keep it clean, documented, and tested.
+4. **Test**: Run `go test ./...` before submitting.
+5. **Submit PR**: Provide a clear description of your changes.
 
 ## Code Style
 
-- Follow standard Go conventions
-- Use `gofmt` for formatting
-- Keep functions focused and small
-- Add comments for exported functions
+- Follow standard Go conventions.
+- Use `gofmt` to format your code.
+- Keep functions focused and small.
+- Add comments for exported functions.
 
 ## Development Setup
 
@@ -40,12 +47,12 @@ go mod download
 go build -o gopunch ./cmd/gopunch
 ```
 
-## Testing
-
-```bash
-go test ./...
-```
-
 ## License
 
-By contributing, you agree that your contributions will be licensed under the project's license.
+By contributing, you agree that your contributions will be licensed under the project's MIT License.
+
+---
+
+<div align="center">
+<sub>Built with ❤️ and Go</sub>
+</div>
