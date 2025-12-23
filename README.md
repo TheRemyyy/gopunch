@@ -12,7 +12,7 @@
 *A lightweight CLI utility for checking uptime and response times of websites.*
 *Supports one-off checks, continuous monitoring, custom headers, retries, and alerting.*
 
-[Quick Start](#-quick-start) • [Installation](#-installation) • [Commands](#-commands) • [Configuration](#-configuration)
+[Quick Start](#quick-start) • [Installation](#installation) • [Commands](#commands) • [Configuration](#configuration)
 
 </div>
 
@@ -33,7 +33,7 @@ GoPunch is a high-performance CLI tool designed for checking the availability an
 - **🏥 Multi-Protocol** — Support for **HTTP**, **TCP**, **DNS**, and **SSL** expiry checks.
 - **📝 Configuration** — Easy setup via JSON config generated with `gopunch init`.
 
-## Installation
+## <a id="installation"></a>📦 Installation
 
 ### From Releases
 
@@ -47,7 +47,7 @@ cd gopunch
 go build -o gopunch ./cmd/gopunch
 ```
 
-## Quick Start
+## <a id="quick-start"></a>🚀 Quick Start
 
 ### One-time Check
 
@@ -74,7 +74,7 @@ gopunch watch https://example.com --interval 5
 gopunch init
 ```
 
-## Commands
+## <a id="commands"></a>🔧 Commands
 
 ### `check` — One-time health check
 
@@ -155,7 +155,7 @@ Creates a `gopunch.json` configuration file with all options documented.
 gopunch version
 ```
 
-## Configuration
+## <a id="configuration"></a>⚙️ Configuration
 
 GoPunch uses a simple JSON configuration format:
 
