@@ -39,7 +39,7 @@ Supports schemes:
   ssl://host:port    - SSL certificate expiry check
 
 If config file exists, defaults are loaded from it.`,
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.ArbitraryArgs,
 	Run:  runCheck,
 }
 
@@ -80,6 +80,9 @@ func runCheck(cmd *cobra.Command, args []string) {
 
 	// Apply config defaults
 	if cfg != nil {
+		if len(args) == 0 {
+			args = cfg.URLs
+		}
 		if !cmd.Flags().Changed("timeout") && cfg.Timeout > 0 {
 			checkTimeout = cfg.Timeout
 		}
