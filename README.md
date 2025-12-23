@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ GoPunch v2.0
+# GoPunch
 
 **Dead Simple Uptime Monitoring Tool**
 
