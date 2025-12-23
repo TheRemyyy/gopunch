@@ -1,18 +1,18 @@
 <div align="center">
 
-# ⚡ GoPunch
+# ⚡ GoPunch v2.0
 
 **Dead Simple Uptime Monitoring Tool**
 
-[![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?style=flat-square&logo=go&logoColor=white)](https://go.dev/)
+[![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat-square&logo=go&logoColor=white)](https://go.dev/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/TheRemyyy/gopunch?style=flat-square&color=yellow)](https://github.com/TheRemyyy/gopunch/stargazers)
 [![Build](https://img.shields.io/github/actions/workflow/status/TheRemyyy/gopunch/build.yml?style=flat-square&label=Build)](https://github.com/TheRemyyy/gopunch/actions)
 
 A lightweight CLI utility for checking uptime and response times of websites.  
-Supports one-off checks or recurring interval-based monitoring with detailed statistics.
+Supports one-off checks, continuous monitoring, custom headers, retries, and alerting.
 
-[Installation](#-installation) • [Usage](#-usage) • [Configuration](#-configuration) • [Contributing](CONTRIBUTING.md)
+[Quick Start](#-quick-start) • [Installation](#-installation) • [Commands](#-commands) • [Configuration](#-configuration)
 
 </div>
 
@@ -20,34 +20,40 @@ Supports one-off checks or recurring interval-based monitoring with detailed sta
 
 ## ✨ Features
 
-- **Multi-URL Support** — Check multiple endpoints with customizable HTTP methods
-- **Interval Monitoring** — Continuous monitoring with configurable intervals
-- **Detailed Statistics** — Response times, error counts, status code distribution, histograms
-- **Export Options** — Export to CSV or JSON format
-- **Concurrent Requests** — Thread-safe parallel requests with configurable concurrency
-- **JSON Config** — Streamlined setup via configuration file
-- **Zero Dependencies** — Lightweight and easy to deploy
+- **🎯 Simple Commands** — `check` for one-off, `watch` for continuous monitoring
+- **📊 Multiple Output Formats** — Table, JSON, CSV, minimal
+- **🔄 Retry Logic** — Automatic retries with exponential backoff
+- **🔐 TLS Options** — Skip verification, custom headers, follow redirects
+- **🚨 Alerting** — Discord/Slack webhooks with cooldown
+- **⚡ Concurrent** — Parallel requests with configurable concurrency
+- **🏥 Health Checks** — HTTP, TCP port, DNS, SSL certificate expiry
+- **📝 Config Files** — JSON configuration with `gopunch init`
 
 ---
 
 ## 🚀 Quick Start
 
 ```bash
-# Clone and run
-git clone https://github.com/TheRemyyy/gopunch.git
-cd gopunch
+# One-time check
+gopunch check https://example.com
 
-# Single check
-go run ./cmd/gopunch https://postman-echo.com/get
+# Check multiple URLs with JSON output
+gopunch check --format json https://example.com https://api.example.com
 
-# Build binary
-go build -o gopunch ./cmd/gopunch
-./gopunch https://postman-echo.com/get
+# Continuous monitoring every 5 seconds
+gopunch watch https://example.com --interval 5
+
+# Generate config file
+gopunch init
 ```
 
 ---
 
 ## 📦 Installation
+
+### From Releases
+
+Download the latest binary for your platform from [Releases](https://github.com/TheRemyyy/gopunch/releases).
 
 ### From Source
 
@@ -57,107 +63,108 @@ cd gopunch
 go build -o gopunch ./cmd/gopunch
 ```
 
-### Dependencies
+---
+
+## 🔧 Commands
+
+### `check` — One-time health check
 
 ```bash
-go get golang.org/x/sync
+gopunch check [flags] <url> [url...]
+
+Flags:
+  -t, --timeout int       Request timeout in seconds (default 10)
+  -m, --method string     HTTP method (default "GET")
+  -H, --header strings    Custom headers (repeatable)
+  -d, --data string       Request body for POST/PUT
+  -k, --insecure          Skip TLS verification
+  -L, --follow            Follow redirects (default true)
+  -e, --expect ints       Expected status codes
+  -r, --retries int       Number of retries on failure
+  -f, --format string     Output: table, json, csv, minimal (default "table")
+  -q, --quiet             Suppress output, exit code only
+  -c, --concurrency int   Max concurrent requests (default 10)
+```
+
+**Examples:**
+
+```bash
+# POST with custom header
+gopunch check https://api.example.com \
+  --method POST \
+  --header "Authorization: Bearer token" \
+  --data '{"test": true}'
+
+# Check expecting specific status codes
+gopunch check https://example.com --expect 200 --expect 201
+
+# JSON output for scripting
+gopunch check --format json https://example.com | jq .
 ```
 
 ---
 
-## 🔧 Usage
+### `watch` — Continuous monitoring
 
 ```bash
-gopunch [flags] <url1> [url2 ...]
+gopunch watch [flags] <url> [url...]
+
+Flags:
+  -i, --interval int      Check interval in seconds (default 5)
+  # ... same flags as check
 ```
 
-### Examples
+**Example:**
 
-| Purpose | Command |
-|---------|---------|
-| Single check | `gopunch https://example.com` |
-| With config file | `gopunch --config=config.json` |
-| Interval monitoring | `gopunch --interval=5 https://example.com` |
-| POST request | `gopunch --method=POST --data='{"key":"value"}' https://api.example.com` |
-| Export to CSV | `gopunch --export=stats.csv https://example.com` |
-| Verbose output | `gopunch --verbose https://example.com` |
+```bash
+gopunch watch https://example.com https://api.example.com --interval 10
+```
+
+Press `Ctrl+C` to stop and see summary statistics.
+
+---
+
+### `init` — Generate config file
+
+```bash
+gopunch init [filename]
+```
+
+Creates a `gopunch.json` configuration file with all options documented.
+
+---
+
+### `version` — Show version info
+
+```bash
+gopunch version
+```
 
 ---
 
 ## ⚙️ Configuration
-
-### Command Line Flags
-
-| Flag | Description | Default |
-|------|-------------|---------|
-| `--config` | Path to JSON config file | `""` |
-| `--interval` | Interval between checks in seconds (0 = once) | `0` |
-| `--timeout` | Request timeout in seconds | `5` |
-| `--method` | HTTP method (GET, POST, HEAD, etc.) | `GET` |
-| `--data` | Request body for POST/PUT | `""` |
-| `--concurrency` | Maximum concurrent requests | `10` |
-| `--verbose` | Enable verbose output | `false` |
-| `--logfile` | Write output to file | `""` |
-| `--export` | Export stats (`.csv` or `.json`) | `""` |
 
 ### JSON Config File
 
 ```json
 {
   "urls": ["https://example.com", "https://api.example.com"],
-  "interval": 5,
-  "timeout": 15,
-  "concurrency": 2,
-  "verbose": true,
-  "logfile": "results.log",
-  "export": "stats.csv",
-  "url_configs": [
-    {
-      "url": "https://api.example.com",
-      "method": "POST",
-      "data": "{\"test\":\"value\"}"
-    }
-  ]
-}
-```
-
----
-
-## 📊 Output
-
-### Console
-
-```
-✅ https://example.com - Status: 200 OK, Time: 150 ms, Size: 1256 bytes
-
---- Statistics ---
-Total checks: 1
-Total errors: 0
-https://example.com - Checks: 1, Avg response time: 150.00 ms
-Status codes:
-  200 OK: 1 (100.00%)
-Response time histogram:
-  <100ms: 0 | 100-500ms: 1 | 500-1000ms: 0 | >1000ms: 0
-```
-
-### CSV Export
-
-```csv
-URL,Checks,AvgTime_ms,AvgSize_bytes,StatusCode,Count
-https://example.com,1,150.00,1256.00,200 OK,1
-```
-
-### JSON Export
-
-```json
-{
-  "total_checks": 1,
-  "total_errors": 0,
-  "urls": {
-    "https://example.com": {
-      "checks": 1,
-      "avg_time_ms": 150,
-      "status_codes": { "200 OK": 1 }
+  "interval": 30,
+  "timeout": 10,
+  "method": "GET",
+  "headers": {
+    "Authorization": "Bearer token"
+  },
+  "insecure": false,
+  "follow_redirects": true,
+  "concurrency": 10,
+  "retries": 2,
+  "alerting": {
+    "enabled": true,
+    "cooldown_seconds": 300,
+    "webhook": {
+      "url": "https://discord.com/api/webhooks/YOUR_ID",
+      "method": "POST"
     }
   }
 }
@@ -165,29 +172,63 @@ https://example.com,1,150.00,1256.00,200 OK,1
 
 ---
 
-## 🛑 Graceful Shutdown
+## 📊 Output Formats
 
-For interval-based monitoring, press `Ctrl+C` to stop. GoPunch will print final statistics and export to the specified file.
+### Table (default)
+
+```
+STATUS  URL                      CODE  TIME   SIZE
+✓       https://example.com      200   150ms  1.2KB
+✗       https://api.example.com  500   89ms   0B
+```
+
+### JSON
+
+```json
+[
+  {"url":"https://example.com","status_code":200,"duration_ms":150,"size":1234,"success":true,"error":null}
+]
+```
+
+### CSV
+
+```csv
+url,status_code,duration_ms,size,success,error
+https://example.com,200,150,1234,true,
+```
 
 ---
 
-## 📝 Notes
+## 🚨 Alerting
 
-- Use `https://postman-echo.com/get` for reliable testing
-- Increase `--timeout` if encountering deadline errors
-- Flags override config file values
+GoPunch supports Discord/Slack webhooks for alerts when endpoints go down.
+
+```json
+{
+  "alerting": {
+    "enabled": true,
+    "cooldown_seconds": 300,
+    "webhook": {
+      "url": "https://discord.com/api/webhooks/YOUR_WEBHOOK_ID"
+    }
+  }
+}
+```
+
+- **Cooldown** prevents alert spam (default 5 minutes)
+- **Recovery alerts** sent when endpoint comes back online
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a PR.
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
 ## 🔒 Security
 
-For security issues, please see our [Security Policy](SECURITY.md).
+For security issues, see [SECURITY.md](SECURITY.md).
 
 ---
 
