@@ -9,10 +9,9 @@
 [![GitHub Stars](https://img.shields.io/github/stars/TheRemyyy/gopunch?style=flat-square&color=yellow)](https://github.com/TheRemyyy/gopunch/stargazers)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/TheRemyyy/gopunch/build.yml?style=flat-square&label=Build)](https://github.com/TheRemyyy/gopunch/actions)
 
-*A lightweight CLI utility for checking uptime and response times of websites.*
-*Supports one-off checks, continuous monitoring, custom headers, retries, and alerting.*
+*A high-performance CLI utility for checking uptime and response times of web services.*
 
-[Quick Start](#quick-start) • [Installation](#installation) • [Commands](#commands) • [Configuration](#configuration)
+[Quick Start](#quick-start) • [Installation](#installation) • [Commands](#commands) • [Documentation](#documentation)
 
 </div>
 
@@ -20,24 +19,18 @@
 
 ## Overview
 
-GoPunch is a high-performance CLI tool designed for checking the availability and response times of web services. Whether you need a quick one-off check or continuous monitoring with alerts, GoPunch delivers with simplicity and speed.
+GoPunch is a lightweight, concurrent tool designed for monitoring availability and performance. Whether you need a quick one-off check or continuous monitoring with Discord/Slack alerts, GoPunch delivers with simplicity and speed.
 
 ### Key Features
 
 - **🎯 Simple Commands** — `check` for one-off inspection, `watch` for continuous monitoring.
-- **📊 Multiple Outputs** — Export data to **Table**, **JSON**, **CSV**, or keep it **Minimal**.
-- **🔄 Smart Retries** — Automatic retry logic with exponential backoff for transient failures.
-- **🔐 Advanced TLS** — Skip verification, customizable headers, and redirect handling.
-- **🚨 Instant Alerting** — Integrated **Discord** & **Slack** webhooks with configurable cooldowns.
-- **⚡ High Concurrency** — Parallel execution with adjustable concurrency levels.
-- **🏥 Multi-Protocol** — Support for **HTTP**, **TCP**, **DNS**, and **SSL** expiry checks.
-- **📝 Configuration** — Easy setup via JSON config generated with `gopunch init`.
+- **📊 Multiple Protocols** — Support for **HTTP**, **TCP**, **DNS**, and **SSL** expiry checks.
+- **🚨 Instant Alerting** — Integrated **Discord** & **Slack** webhooks with cooldown management.
+- **🔄 Smart Retries** — Automatic retry logic with exponential backoff.
+- **⚡ High Concurrency** — Parallel execution using Go routines and semaphores.
+- **📝 Exportable** — Output data to **Table**, **JSON**, **CSV**, or **Minimal** formats.
 
 ## <a id="installation"></a>📦 Installation
-
-### From Releases
-
-Download the latest binary for your platform from [Releases](https://github.com/TheRemyyy/gopunch/releases).
 
 ### From Source
 
@@ -49,175 +42,51 @@ go build -o gopunch ./cmd/gopunch
 
 ## <a id="quick-start"></a>🚀 Quick Start
 
-### One-time Check
-
+### Check a website
 ```bash
 gopunch check https://example.com
 ```
 
-### JSON Output
-
+### Continuous monitoring every 10 seconds
 ```bash
-gopunch check --format json https://example.com https://api.example.com
+gopunch watch https://example.com --interval 10
 ```
 
-### Continuous Monitoring
-
-```bash
-# Monitor every 5 seconds
-gopunch watch https://example.com --interval 5
-```
-
-### Generate Config
-
+### Generate a config template
 ```bash
 gopunch init
 ```
 
-## <a id="commands"></a>🔧 Commands
+## <a id="commands"></a>🔧 Commands Summary
 
-### `check` — One-time health check
-
-```bash
-gopunch check [flags] <url> [url...]
-```
-
-**Flags:**
-
-| Flag | Description | Default |
-| :--- | :--- | :--- |
-| `-t, --timeout` | Request timeout in seconds | `10` |
-| `-m, --method` | HTTP method | `"GET"` |
-| `-H, --header` | Custom headers (repeatable) | - |
-| `-d, --data` | Request body for POST/PUT | - |
-| `-k, --insecure` | Skip TLS verification | `false` |
-| `-L, --follow` | Follow redirects | `true` |
-| `-e, --expect` | Expected status codes | - |
-| `-r, --retries` | Number of retries on failure | `0` |
-| `-f, --format` | Output: table, json, csv, minimal | `"table"` |
-| `-q, --quiet` | Suppress output, exit code only | `false` |
-| `-c, --concurrency` | Max concurrent requests | `10` |
-
-**Examples:**
-
-```bash
-# POST with custom header
-gopunch check https://api.example.com \
-  --method POST \
-  --header "Authorization: Bearer token" \
-  --data '{"test": true}'
-
-# Check expecting specific status codes
-gopunch check https://example.com --expect 200 --expect 201
-
-# JSON output for scripting
-gopunch check --format json https://example.com | jq .
-```
+- **`check`**: Performs a one-time health check. Supports various flags for methods, headers, and formats.
+- **`watch`**: Starts a continuous monitoring loop with live updates and summary stats.
+- **`init`**: Generates a sample `gopunch.json` configuration file.
+- **`version`**: Displays the current version and build information.
 
 ---
 
-### `watch` — Continuous monitoring
+## <a id="documentation"></a>📄 Documentation
 
-```bash
-gopunch watch [flags] <url> [url...]
-```
+For deep-dive information, please refer to the specialized guides in the `docs/` directory:
 
-**Flags:**
+### Core Guides
+- 📖 **[Documentation Overview](docs/overview.md)** — The starting point for all documentation.
+- 🏗️ **[Architecture & Internals](docs/architecture.md)** — How the engine works and package structure.
+- ⚙️ **[Configuration Reference](docs/configuration.md)** — Detailed look at `gopunch.json` and precedence.
+- 🚨 **[Alerting System](docs/alerting.md)** — Setting up webhooks, cooldowns, and recovery notifications.
+- 📊 **[Output Formats](docs/output-formats.md)** — Detailed examples of Table, JSON, CSV, and Minimal outputs.
 
-| Flag | Description | Default |
-| :--- | :--- | :--- |
-| `-i, --interval` | Check interval in seconds | `5` |
-| *...plus all `check` flags* | | |
+### Command Manuals
+- 🛠️ **[check command](docs/commands/check.md)** — Complete flag reference and examples for one-time checks.
+- 🕒 **[watch command](docs/commands/watch.md)** — Detailed guide on real-time monitoring and statistics.
+- 📝 **[init command](docs/commands/init.md)** — How to use and customize the configuration template.
 
-**Example:**
-
-```bash
-gopunch watch https://example.com https://api.example.com --interval 10
-```
-
-*Press `Ctrl+C` to stop and see summary statistics.*
-
----
-
-### `init` — Generate config file
-
-```bash
-gopunch init [filename]
-```
-
-Creates a `gopunch.json` configuration file with all options documented.
+### Protocol Details
+- 🌐 **[HTTP/HTTPS](docs/protocols/http.md)** — Headers, body, redirects, and TLS settings.
+- 🔌 **[TCP, DNS & SSL](docs/protocols/tcp-dns-ssl.md)** — Monitoring non-HTTP services and certificate expiry.
 
 ---
-
-### `version` — Show version info
-
-```bash
-gopunch version
-```
-
-## <a id="configuration"></a>⚙️ Configuration
-
-GoPunch uses a simple JSON configuration format:
-
-```json
-{
-  "urls": ["https://example.com", "https://api.example.com"],
-  "interval": 30,
-  "timeout": 10,
-  "method": "GET",
-  "headers": {
-    "Authorization": "Bearer token"
-  },
-  "insecure": false,
-  "follow_redirects": true,
-  "concurrency": 10,
-  "retries": 2,
-  "alerting": {
-    "enabled": true,
-    "cooldown_seconds": 300,
-    "webhook": {
-      "url": "https://discord.com/api/webhooks/YOUR_ID",
-      "method": "POST"
-    }
-  }
-}
-```
-
-## Output Formats
-
-### Table (default)
-
-```
-STATUS  URL                      CODE  TIME   SIZE
-✓       https://example.com      200   150ms  1.2KB
-✗       https://api.example.com  500   89ms   0B
-```
-
-### JSON
-
-```json
-[
-  {"url":"https://example.com","status_code":200,"duration_ms":150,"size":1234,"success":true,"error":null}
-]
-```
-
-### CSV
-
-```csv
-url,status_code,duration_ms,size,success,error
-https://example.com,200,150,1234,true,
-```
-
-## Alerting
-
-GoPunch supports Discord/Slack webhooks for alerts when endpoints go down.
-
-- **Cooldown**: Prevents alert spam (default 5 minutes).
-- **Recovery**: Alerts are sent when an endpoint comes back online.
-
-## Security
-
-For security issues, see [SECURITY.md](SECURITY.md).
 
 ## License
 
